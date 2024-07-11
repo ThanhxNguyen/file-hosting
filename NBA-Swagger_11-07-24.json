@@ -1,0 +1,327 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "NBA Experience API",
+        "description": "This API is meant to be used to retrieve NBA Recommendations",
+        "contact": {
+            "name": "Thunder Team",
+            "email": "Thunder@bupaau.onmicrosoft.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/isalive": {
+            "get": {
+                "tags": [
+                    "Experience.Api.NBA"
+                ],
+                "parameters": [
+                    {
+                        "name": "X-Correlation-Request",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/Personalisation/action/{alert}": {
+            "get": {
+                "tags": [
+                    "Personalisation"
+                ],
+                "summary": "Retrieve the Personalised Actions",
+                "operationId": "GetRecommendations",
+                "parameters": [
+                    {
+                        "name": "memberNumber",
+                        "in": "query",
+                        "description": "The member number",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "The page",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "alert",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-Correlation-Request",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-Correlation-Session",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InteractionResponse"
+                                    }
+                                }
+                            },
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InteractionResponse"
+                                    }
+                                }
+                            },
+                            "text/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/InteractionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/Personalisation/action": {
+            "post": {
+                "tags": [
+                    "Personalisation"
+                ],
+                "summary": "Record Personalised Action Outcome",
+                "operationId": "PostRecordOutCome",
+                "parameters": [
+                    {
+                        "name": "X-Correlation-Request",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "X-Correlation-Session",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "The Action Outcome Details",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOutcomeRequest"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOutcomeRequest"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOutcomeRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ActionOutcomeRequest": {
+                "type": "object",
+                "properties": {
+                    "interactionId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "outcome": {
+                        "$ref": "#/components/schemas/OutcomeType"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ActionType": {
+                "enum": [
+                    "Redirect",
+                    "Dismiss",
+                    "RedirectNewTab"
+                ],
+                "type": "string"
+            },
+            "CallToAction": {
+                "type": "object",
+                "properties": {
+                    "position": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "actionType": {
+                        "$ref": "#/components/schemas/ActionType"
+                    },
+                    "uniqueId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "label": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "destinationUri": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "accessibilityLabel": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "outcome": {
+                        "$ref": "#/components/schemas/OutcomeType"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "Dismiss": {
+                "type": "object",
+                "properties": {
+                    "isDismissible": {
+                        "type": "boolean"
+                    },
+                    "outcome": {
+                        "$ref": "#/components/schemas/OutcomeType"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "InteractionResponse": {
+                "type": "object",
+                "properties": {
+                    "interactionId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "heading": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "content": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "showIcon": {
+                        "type": "boolean"
+                    },
+                    "treatment": {
+                        "$ref": "#/components/schemas/Treatment"
+                    },
+                    "dismiss": {
+                        "$ref": "#/components/schemas/Dismiss"
+                    },
+                    "callToAction": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CallToAction"
+                        },
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "OutcomeType": {
+                "enum": [
+                    "None",
+                    "Positive",
+                    "Neutral",
+                    "Negative"
+                ],
+                "type": "string"
+            },
+            "SentimentType": {
+                "enum": [
+                    "Neutral",
+                    "Glue",
+                    "Warning",
+                    "Success",
+                    "Danger"
+                ],
+                "type": "string"
+            },
+            "Treatment": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "sentiment": {
+                        "$ref": "#/components/schemas/SentimentType"
+                    }
+                },
+                "additionalProperties": false
+            }
+        },
+        "securitySchemes": {
+            "OAuth": {
+                "type": "oauth2",
+                "flows": {
+                    "authorizationCode": {
+                        "authorizationUrl": "https://prpd-account.np.bupa.com.au/bluekeyprpdb2c01.onmicrosoft.com/b2c_1a_bupa-uni-prpd-signinsignup/oauth2/v2.0/authorize",
+                        "tokenUrl": "https://prpd-account.np.bupa.com.au/bluekeyprpdb2c01.onmicrosoft.com/B2C_1A_BUPA-UNI-PRPD-SIGNINSIGNUP/oauth2/v2.0/token",
+                        "scopes": {}
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "OAuth": []
+        }
+    ]
+}
